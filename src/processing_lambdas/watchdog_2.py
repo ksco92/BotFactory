@@ -76,7 +76,7 @@ def watchdog2(event: dict, _: dict) -> None:
                     "discord_user",
                     discord_user,
                 )
-                phone_number = ddb_item["phone_number"]["S"]
+                phone_number = ddb_item["phone_number"]["S"]  # type: ignore
                 raid_alert(pinpoint_app_id, origination_number, phone_number)
                 discord_client.send_message_to_channel(
                     {

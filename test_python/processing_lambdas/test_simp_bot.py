@@ -1,8 +1,7 @@
-"""
-Tests for the SimpBot processing lambda.
-"""
+"""Test for the SimpBot processing lambda."""
 
 import json
+from typing import Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -11,7 +10,10 @@ from processing_lambdas.simp_bot import simp_bot
 
 
 def _make_sqs_record(
-    command: str, options: list, command_issuer: str, channel_id: str
+    command: str,
+    options: list,
+    command_issuer: str,
+    channel_id: str,
 ) -> dict:
     """
     Build an SQS record containing a single command.
@@ -29,7 +31,7 @@ def _make_sqs_record(
                 "options": options,
                 "command_issuer": command_issuer,
                 "channel_id": channel_id,
-            }
+            },
         ),
         "receiptHandle": "dummy_receipt_handle",
     }
@@ -54,7 +56,6 @@ def test_simp_bot_points_happy_path(command: str, options: list) -> None:
 
     :param command: The command name to test.
     :param options: Command options for add_points/remove_points.
-    :return: None.
     """
     event = {
         "Records": [
@@ -63,8 +64,8 @@ def test_simp_bot_points_happy_path(command: str, options: list) -> None:
                 options=options,
                 command_issuer="issuer#1111",
                 channel_id="987654",
-            )
-        ]
+            ),
+        ],
     }
 
     with (
@@ -82,7 +83,8 @@ def test_simp_bot_points_happy_path(command: str, options: list) -> None:
 
         # Check that we used the correct queue handle
         mock_sqs_client.delete_sqs_message.assert_called_once_with(
-            "test_queue", "dummy_receipt_handle"
+            "test_queue",
+            "dummy_receipt_handle",
         )
         # For remove_points, we pass the points negative
         if command == "remove_points":
@@ -98,11 +100,7 @@ def test_simp_bot_points_happy_path(command: str, options: list) -> None:
 
 
 def test_simp_bot_point_balance_happy_path() -> None:
-    """
-    Test that simp_bot handles point_balance successfully.
-
-    :return: None.
-    """
+    """Test that simp_bot handles point_balance successfully."""
     event = {
         "Records": [
             _make_sqs_record(
@@ -110,8 +108,8 @@ def test_simp_bot_point_balance_happy_path() -> None:
                 options=[],
                 command_issuer="issuer#1111",
                 channel_id="channel123",
-            )
-        ]
+            ),
+        ],
     }
 
     mock_balance = [{"discord_user": "Alice#1234", "total_points": 100}]
@@ -134,16 +132,13 @@ def test_simp_bot_point_balance_happy_path() -> None:
         assert sent_message_args[0]["content"].startswith("```")
 
         mock_sqs_client.delete_sqs_message.assert_called_once_with(
-            "test_queue", "dummy_receipt_handle"
+            "test_queue",
+            "dummy_receipt_handle",
         )
 
 
 def test_simp_bot_add_points_exception() -> None:
-    """
-    Test that simp_bot handles exceptions in add_points gracefully.
-
-    :return: None.
-    """
+    """Test that simp_bot handles exceptions in add_points gracefully."""
     event = {
         "Records": [
             _make_sqs_record(
@@ -154,8 +149,8 @@ def test_simp_bot_add_points_exception() -> None:
                 ],
                 command_issuer="issuer#9999",
                 channel_id="channelXYZ",
-            )
-        ]
+            ),
+        ],
     }
 
     with (
@@ -170,7 +165,7 @@ def test_simp_bot_add_points_exception() -> None:
 
         mock_discord_client.get_user.return_value = "issuer#9999"
         mock_add_points.side_effect = ValueError(
-            "You can't do transactions for yourself. Don't be a dick."
+            "You can't do transactions for yourself. Don't be a dick.",
         )
 
         simp_bot(event, {})
@@ -180,16 +175,13 @@ def test_simp_bot_add_points_exception() -> None:
         assert "You can't do transactions for yourself" in args[0]["content"]
 
         mock_sqs_client.delete_sqs_message.assert_called_once_with(
-            "test_queue", "dummy_receipt_handle"
+            "test_queue",
+            "dummy_receipt_handle",
         )
 
 
 def test_simp_bot_unknown_command() -> None:
-    """
-    Test that an unknown command is ignored (no error thrown).
-
-    :return: None.
-    """
+    """Test that an unknown command is ignored (no error thrown)."""
     event = {
         "Records": [
             _make_sqs_record(
@@ -197,8 +189,8 @@ def test_simp_bot_unknown_command() -> None:
                 options=[],
                 command_issuer="dummy_user",
                 channel_id="dummy_channel",
-            )
-        ]
+            ),
+        ],
     }
 
     with (
@@ -214,17 +206,19 @@ def test_simp_bot_unknown_command() -> None:
 
         # We only expect the message to be deleted, no calls to add_points or get_point_balance.
         mock_sqs_client.delete_sqs_message.assert_called_once_with(
-            "test_queue", "dummy_receipt_handle"
+            "test_queue",
+            "dummy_receipt_handle",
         )
         # Because there's no matching if/elif branch, we do NOT call send_message_to_channel.
 
 
 @pytest.fixture(autouse=True)
-def mock_env() -> None:
+def mock_env() -> Generator:
     """Mock environment variables for all tests."""
     # The code references these for secrets + queue URLs
     with patch.dict(
-        "os.environ", {"BOT_SECRET_NAME": "test_secret", "SQS_QUEUE_URL": "test_queue"}
+        "os.environ",
+        {"BOT_SECRET_NAME": "test_secret", "SQS_QUEUE_URL": "test_queue"},
     ):
         yield
 

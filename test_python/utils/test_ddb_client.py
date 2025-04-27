@@ -26,7 +26,7 @@ def test_get_item(ddb_client: DdbClient) -> None:
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
         response = ddb_client.get_item("dummy_table", "test_key", "test_value")
-        assert response["test_key"]["S"] == "test_value"
+        assert response["test_key"]["S"] == "test_value"  # type: ignore
 
 
 def test_put_item(ddb_client: DdbClient) -> None:

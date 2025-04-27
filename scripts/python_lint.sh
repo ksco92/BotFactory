@@ -15,5 +15,5 @@ python3 -m flake8 --show-source --statistics --config=setup.cfg src
 python3 -m flake8 --show-source --statistics --config=setup.cfg test_python
 
 echo "Running mypy..."
-mypy src
-mypy test_python
+mypy src --explicit-package-bases
+mypy test_python --explicit-package-bases

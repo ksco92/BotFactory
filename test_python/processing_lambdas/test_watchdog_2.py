@@ -1,6 +1,7 @@
 """Tests for the Watchdog2 processing lambda."""
 
 import json
+from typing import Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -238,7 +239,7 @@ def test_watchdog2_raid2_exception() -> None:
 
 
 @pytest.fixture(autouse=True)
-def mock_env() -> None:
+def mock_env() -> Generator:
     """Mock environment variables for all tests."""
     with patch.dict(
         "os.environ",

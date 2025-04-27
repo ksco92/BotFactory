@@ -1,6 +1,4 @@
-"""
-Tests for the simp_bot.py command update module.
-"""
+"""Test for the simp_bot.py command update module."""
 
 from unittest.mock import patch
 
@@ -10,7 +8,8 @@ from command_updates.simp_bot import simp_bot_commands
 
 
 @pytest.mark.parametrize(
-    "dummy_event,dummy_context", [({}, {}), ({"foo": "bar"}, {"baz": True})]
+    "dummy_event,dummy_context",
+    [({}, {}), ({"foo": "bar"}, {"baz": True})],
 )
 def test_simp_bot_commands_happy_path(dummy_event: dict, dummy_context: dict) -> None:
     """
@@ -18,10 +17,9 @@ def test_simp_bot_commands_happy_path(dummy_event: dict, dummy_context: dict) ->
 
     :param dummy_event: An example AWS event dictionary.
     :param dummy_context: An example AWS context dictionary.
-    :return: None.
     """
     with patch(
-        "command_updates.simp_bot.run_command_updates"
+        "command_updates.simp_bot.run_command_updates",
     ) as mock_run_command_updates:
         simp_bot_commands(dummy_event, dummy_context)
 

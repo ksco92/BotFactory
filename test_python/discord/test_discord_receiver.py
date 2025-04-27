@@ -21,14 +21,14 @@ def mock_verify_event_signature(_: DiscordClient, __: dict) -> bool:
 
 
 def test_discord_receiver_bad_ping(
-    client: DiscordClient, lambda_bad_ping_event: dict
+    client: DiscordClient,
+    lambda_bad_ping_event: dict,
 ) -> None:
     """
     Test that a ping with a bad signature returns an error.
 
     :param client: A Discord client.
     :param lambda_bad_ping_event: Lambda bad ping discord event.
-    :return: None.
     """
     os.environ["BOT_SECRET_NAME"] = "test_secret"
     os.environ["SQS_QUEUE_URL"] = "test_queue"
@@ -39,14 +39,14 @@ def test_discord_receiver_bad_ping(
 
 
 def test_discord_receiver_good_ping(
-    client: DiscordClient, lambda_bad_ping_event: dict
+    client: DiscordClient,
+    lambda_bad_ping_event: dict,
 ) -> None:
     """
     Test that a ping with a good signature returns a 200.
 
     :param client: A Discord client.
     :param lambda_bad_ping_event: Lambda bad ping discord event.
-    :return: None.
     """
     os.environ["BOT_SECRET_NAME"] = "test_secret"
     os.environ["SQS_QUEUE_URL"] = "test_queue"
@@ -62,14 +62,14 @@ def test_discord_receiver_good_ping(
 
 
 def test_discord_receiver_forward_to_sqs(
-    client: DiscordClient, lambda_bad_not_ping_discord_event: dict
+    client: DiscordClient,
+    lambda_bad_not_ping_discord_event: dict,
 ) -> None:
     """
     Test that a discord event gets sent to SQS and returns a success.
 
     :param client: A Discord client.
     :param lambda_bad_not_ping_discord_event: Lambda discord event.
-    :return: None.
     """
     os.environ["BOT_SECRET_NAME"] = "test_secret"
     os.environ["SQS_QUEUE_URL"] = "test_queue"

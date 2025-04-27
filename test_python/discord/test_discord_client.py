@@ -14,7 +14,6 @@ def test_init(client: DiscordClient) -> None:
     Test the initialization of the DiscordClient.
 
     :param client: A Discord client.
-    :return: None.
     """
     assert client._api_url == "https://discord.com/api"
     assert isinstance(client._secret, dict)
@@ -25,7 +24,6 @@ def test_send_message_to_channel_success(client: DiscordClient) -> None:
     Test sending a message to a channel with a success response.
 
     :param client: A Discord client.
-    :return: None.
     """
     with patch("requests.post") as mock_post:
         mock_response = MagicMock()
@@ -47,7 +45,6 @@ def test_send_message_to_channel_failure(client: DiscordClient) -> None:
     Test sending a message to a channel with a failure response.
 
     :param client: A Discord client.
-    :return: None.
     """
     with patch("requests.post") as mock_post:
         mock_response = MagicMock()
@@ -63,7 +60,6 @@ def test_get_success_response(client: DiscordClient) -> None:
     Test the get_success_response method for a non-ping scenario.
 
     :param client: A Discord client.
-    :return: None.
     """
     content = "Test message"
     response = client.get_success_response(content)
@@ -76,7 +72,7 @@ def test_get_success_response(client: DiscordClient) -> None:
                 "data": {
                     "content": content,
                 },
-            }
+            },
         ),
     }
     assert response == expected_response
@@ -87,7 +83,6 @@ def test_get_success_response_ping(client: DiscordClient) -> None:
     Test the get_success_response method for a ping scenario.
 
     :param client: A Discord client.
-    :return: None.
     """
     response = client.get_success_response("", True)
 
@@ -105,7 +100,6 @@ def test_get_unauthorized_response(client: DiscordClient) -> None:
     Test the get_unauthorized_response method.
 
     :param client: A Discord client.
-    :return: None.
     """
     content = "Unauthorized access"
     response = client.get_unauthorized_response(content)
@@ -119,7 +113,7 @@ def test_get_unauthorized_response(client: DiscordClient) -> None:
                 "data": {
                     "content": f"[UNAUTHORIZED]: {content}",
                 },
-            }
+            },
         ),
     }
 
@@ -131,7 +125,6 @@ def test_get_error_response(client: DiscordClient) -> None:
     Test the get_error_response method.
 
     :param client: A Discord client.
-    :return: None.
     """
     error_message = "Error occurred"
     response = client.get_error_response(error_message)
@@ -145,7 +138,7 @@ def test_get_error_response(client: DiscordClient) -> None:
                 "data": {
                     "content": f"[ERROR]: {error_message}",
                 },
-            }
+            },
         ),
     }
 
@@ -153,14 +146,14 @@ def test_get_error_response(client: DiscordClient) -> None:
 
 
 def test_verify_event_signature_failure(
-    lambda_bad_ping_event: dict, client: DiscordClient
+    lambda_bad_ping_event: dict,
+    client: DiscordClient,
 ) -> None:
     """
     Test the verify_event_signature method for a failed verification scenario.
 
     :param client: A Discord client.
     :param lambda_bad_ping_event: A fixture representing a ping event with an invalid signature.
-    :return: None.
     """
     with pytest.raises(Exception):
         client.verify_event_signature(lambda_bad_ping_event)
@@ -174,7 +167,6 @@ def test_verify_event_signature_success(client: DiscordClient) -> None:
     it using the ephemeral public key set in client._secret["PublicKey"].
 
     :param client: A Discord client.
-    :return: None.
     """
     signing_key = SigningKey.generate()
     verify_key = signing_key.verify_key
@@ -214,7 +206,6 @@ def test_get_user_success(mock_get: MagicMock, client: DiscordClient) -> None:
 
     :param client: A Discord client.
     :param mock_get: Mock GET method.
-    :return: None.
     """
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -233,7 +224,8 @@ def test_get_user_success(mock_get: MagicMock, client: DiscordClient) -> None:
     assert user_details == "TestUser#0001"
 
     mock_get.assert_called_once_with(
-        f"{client._api_url}/users/123456", headers=client._headers
+        f"{client._api_url}/users/123456",
+        headers=client._headers,
     )
 
 
@@ -244,7 +236,6 @@ def test_get_user_error(mock_get: MagicMock, client: DiscordClient) -> None:
 
     :param client: A Discord client.
     :param mock_get: Mock GET method.
-    :return: None.
     """
     mock_response = MagicMock()
     mock_response.status_code = 400
@@ -256,31 +247,28 @@ def test_get_user_error(mock_get: MagicMock, client: DiscordClient) -> None:
         client.get_user("123456")
 
     mock_get.assert_called_once_with(
-        f"{client._api_url}/users/123456", headers=client._headers
+        f"{client._api_url}/users/123456",
+        headers=client._headers,
     )
 
 
 def test_get_event_attributes_ping() -> None:
-    """
-    Test the get_event_attributes method for a ping event.
-
-    :return: None.
-    """
+    """Test the get_event_attributes method for a ping event."""
     event = {"body": json.dumps({"type": 1})}
     attributes = DiscordClient.get_event_attributes(event)
     assert attributes == {"is_ping": True}
 
 
 def test_get_event_attributes_command() -> None:
-    """
-    Test the get_event_attributes method for a command event.
-
-    :return: None.
-    """
+    """Test the get_event_attributes method for a command event."""
     event_body = {
         "type": 2,
         "member": {
-            "user": {"username": "TestUser", "discriminator": "0001", "id": "123456789"}
+            "user": {
+                "username": "TestUser",
+                "discriminator": "0001",
+                "id": "123456789",
+            },
         },
         "channel_id": "987654321",
         "data": {

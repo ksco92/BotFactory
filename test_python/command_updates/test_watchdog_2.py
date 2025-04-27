@@ -1,6 +1,4 @@
-"""
-Tests for the watchdog_2.py command update module.
-"""
+"""Test for the watchdog_2.py command update module."""
 
 from unittest.mock import MagicMock, patch
 
@@ -28,13 +26,14 @@ def mock_response(status_code: int) -> MagicMock:
 
 def test_watchdog2_commands_success() -> None:
     """
-    Test that watchdog2_commands registers three commands successfully
-    when the HTTP status code is < 400.
+    Test that watchdog2_commands registers three commands successfully.
+
+    This test verifies behavior when the HTTP status code is < 400.
     """
     with (
         patch("command_updates.watchdog_2.requests.post") as mock_requests_post,
         patch(
-            "command_updates.watchdog_2.SecretsManagerClient"
+            "command_updates.watchdog_2.SecretsManagerClient",
         ) as mock_secrets_manager_class,
     ):
         # Mock the SecretsManagerClient so it returns fake credentials.
@@ -77,13 +76,14 @@ def test_watchdog2_commands_success() -> None:
 
 def test_watchdog2_commands_failure() -> None:
     """
-    Test that watchdog2_commands raises an HTTPError if any call to
-    requests.post returns a 400+ status code.
+    Test that watchdog2_commands raises an HTTPError.
+
+    This test verifies behavior if any call to requests.post returns a 400+ status code.
     """
     with (
         patch("command_updates.watchdog_2.requests.post") as mock_requests_post,
         patch(
-            "command_updates.watchdog_2.SecretsManagerClient"
+            "command_updates.watchdog_2.SecretsManagerClient",
         ) as mock_secrets_manager_class,
     ):
         instance = mock_secrets_manager_class.return_value
