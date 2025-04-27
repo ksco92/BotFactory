@@ -1,6 +1,4 @@
-"""
-Test the get_registered_users function.
-"""
+"""Test the get_registered_users function."""
 
 from unittest.mock import patch
 

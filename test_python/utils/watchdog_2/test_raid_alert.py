@@ -1,6 +1,4 @@
-"""
-Test the raid_alert function.
-"""
+"""Test the raid_alert function."""
 
 from unittest.mock import patch
 

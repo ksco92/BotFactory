@@ -12,6 +12,7 @@ def mock_make_api_call(_: Any, operation_name: str, operation_params: dict) -> d
     :param _: Unused.
     :param operation_name: Name of the API call.
     :param operation_params: Dictionary with the parameters of the request.
+    :raises RuntimeError: If the API call is not implemented.
     :return: The mock API response.
     """
     if operation_name == "GetSecretValue":
@@ -20,7 +21,7 @@ def mock_make_api_call(_: Any, operation_name: str, operation_params: dict) -> d
                 {
                     "PublicKey": secrets.token_hex(32),
                     "Token": "abcd",
-                }
+                },
             ),
         }
     elif operation_name == "SendMessage":
@@ -34,7 +35,7 @@ def mock_make_api_call(_: Any, operation_name: str, operation_params: dict) -> d
             "Item": {
                 "test_key": {
                     "S": "test_value",
-                }
+                },
             },
         }
     elif operation_name == "PutItem":

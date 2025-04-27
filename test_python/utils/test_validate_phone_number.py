@@ -1,6 +1,4 @@
-"""
-Test the validate_phone_number function.
-"""
+"""Test the validate_phone_number function."""
 
 from utils.validate_phone_number import validate_phone_number
 

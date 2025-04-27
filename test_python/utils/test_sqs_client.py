@@ -1,6 +1,4 @@
-"""
-Test the SqsClient class.
-"""
+"""Test the SqsClient class."""
 
 from unittest.mock import patch
 
@@ -25,7 +23,6 @@ def test_delete_sqs_message(sqs_client: SqsClient) -> None:
     Test that delete_sqs_message deletes a message from SQS successfully.
 
     :param sqs_client: An SqsClient instance.
-    :return: None.
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
         response = sqs_client.delete_sqs_message("abcd", "abcd")
@@ -37,7 +34,6 @@ def test_send_sqs_message(sqs_client: SqsClient) -> None:
     Test that send_sqs_message sends a message to SQS successfully.
 
     :param sqs_client: An SqsClient instance.
-    :return: None.
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
         response = sqs_client.send_sqs_message("abcd", "abcd")

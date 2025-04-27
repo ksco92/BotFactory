@@ -1,6 +1,4 @@
-"""
-Test the SecretsManagerClient class.
-"""
+"""Test the SecretsManagerClient class."""
 
 from unittest.mock import patch
 
@@ -25,7 +23,6 @@ def test_get_secret(secrets_manager_client: SecretsManagerClient) -> None:
     Test that get_secret retrieves the specified secret correctly.
 
     :param secrets_manager_client: A SecretsManagerClient instance.
-    :return: None.
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
         response = secrets_manager_client.get_secret("dummy")

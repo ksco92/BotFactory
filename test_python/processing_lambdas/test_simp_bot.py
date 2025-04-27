@@ -67,13 +67,11 @@ def test_simp_bot_points_happy_path(command: str, options: list) -> None:
         ]
     }
 
-    with patch(
-        "processing_lambdas.simp_bot.DiscordClient"
-    ) as mock_discord_client_class, patch(
-        "processing_lambdas.simp_bot.SqsClient"
-    ) as mock_sqs_client_class, patch(
-        "processing_lambdas.simp_bot.add_points"
-    ) as mock_add_points:
+    with (
+        patch("processing_lambdas.simp_bot.DiscordClient") as mock_discord_client_class,
+        patch("processing_lambdas.simp_bot.SqsClient") as mock_sqs_client_class,
+        patch("processing_lambdas.simp_bot.add_points") as mock_add_points,
+    ):
         mock_discord_client = MagicMock()
         mock_sqs_client = MagicMock()
         mock_discord_client_class.return_value = mock_discord_client
@@ -118,13 +116,11 @@ def test_simp_bot_point_balance_happy_path() -> None:
 
     mock_balance = [{"discord_user": "Alice#1234", "total_points": 100}]
 
-    with patch(
-        "processing_lambdas.simp_bot.DiscordClient"
-    ) as mock_discord_client_class, patch(
-        "processing_lambdas.simp_bot.SqsClient"
-    ) as mock_sqs_client_class, patch(
-        "processing_lambdas.simp_bot.get_point_balance"
-    ) as mock_get_balance:
+    with (
+        patch("processing_lambdas.simp_bot.DiscordClient") as mock_discord_client_class,
+        patch("processing_lambdas.simp_bot.SqsClient") as mock_sqs_client_class,
+        patch("processing_lambdas.simp_bot.get_point_balance") as mock_get_balance,
+    ):
         mock_discord_client = MagicMock()
         mock_sqs_client = MagicMock()
         mock_discord_client_class.return_value = mock_discord_client
@@ -162,13 +158,11 @@ def test_simp_bot_add_points_exception() -> None:
         ]
     }
 
-    with patch(
-        "processing_lambdas.simp_bot.DiscordClient"
-    ) as mock_discord_client_class, patch(
-        "processing_lambdas.simp_bot.SqsClient"
-    ) as mock_sqs_client_class, patch(
-        "processing_lambdas.simp_bot.add_points"
-    ) as mock_add_points:
+    with (
+        patch("processing_lambdas.simp_bot.DiscordClient") as mock_discord_client_class,
+        patch("processing_lambdas.simp_bot.SqsClient") as mock_sqs_client_class,
+        patch("processing_lambdas.simp_bot.add_points") as mock_add_points,
+    ):
         mock_discord_client = MagicMock()
         mock_sqs_client = MagicMock()
         mock_discord_client_class.return_value = mock_discord_client
@@ -207,11 +201,10 @@ def test_simp_bot_unknown_command() -> None:
         ]
     }
 
-    with patch(
-        "processing_lambdas.simp_bot.DiscordClient"
-    ) as mock_discord_client_class, patch(
-        "processing_lambdas.simp_bot.SqsClient"
-    ) as mock_sqs_client_class:
+    with (
+        patch("processing_lambdas.simp_bot.DiscordClient") as mock_discord_client_class,
+        patch("processing_lambdas.simp_bot.SqsClient") as mock_sqs_client_class,
+    ):
         mock_discord_client = MagicMock()
         mock_sqs_client = MagicMock()
         mock_discord_client_class.return_value = mock_discord_client
@@ -228,11 +221,7 @@ def test_simp_bot_unknown_command() -> None:
 
 @pytest.fixture(autouse=True)
 def mock_env() -> None:
-    """
-    Mock environment variables for all tests.
-
-    :return: None.
-    """
+    """Mock environment variables for all tests."""
     # The code references these for secrets + queue URLs
     with patch.dict(
         "os.environ", {"BOT_SECRET_NAME": "test_secret", "SQS_QUEUE_URL": "test_queue"}
@@ -241,11 +230,7 @@ def mock_env() -> None:
 
 
 def test_simp_bot_remove_points_exception() -> None:
-    """
-    Test that simp_bot handles exceptions in remove_points gracefully.
-
-    :return: None.
-    """
+    """Test that simp_bot handles exceptions in remove_points gracefully."""
     event = {
         "Records": [
             _make_sqs_record(
@@ -256,17 +241,15 @@ def test_simp_bot_remove_points_exception() -> None:
                 ],
                 command_issuer="issuer#8888",
                 channel_id="channelXYZ",
-            )
-        ]
+            ),
+        ],
     }
 
-    with patch(
-        "processing_lambdas.simp_bot.DiscordClient"
-    ) as mock_discord_client_class, patch(
-        "processing_lambdas.simp_bot.SqsClient"
-    ) as mock_sqs_client_class, patch(
-        "processing_lambdas.simp_bot.add_points"
-    ) as mock_add_points:
+    with (
+        patch("processing_lambdas.simp_bot.DiscordClient") as mock_discord_client_class,
+        patch("processing_lambdas.simp_bot.SqsClient") as mock_sqs_client_class,
+        patch("processing_lambdas.simp_bot.add_points") as mock_add_points,
+    ):
         mock_discord_client = MagicMock()
         mock_sqs_client = MagicMock()
         mock_discord_client_class.return_value = mock_discord_client
@@ -274,7 +257,7 @@ def test_simp_bot_remove_points_exception() -> None:
 
         mock_discord_client.get_user.return_value = "someUser#9999"
         mock_add_points.side_effect = RuntimeError(
-            "Some random error during remove_points."
+            "Some random error during remove_points.",
         )
 
         simp_bot(event, {})
@@ -285,16 +268,13 @@ def test_simp_bot_remove_points_exception() -> None:
         assert "Some random error during remove_points." in args[0]["content"]
 
         mock_sqs_client.delete_sqs_message.assert_called_once_with(
-            "test_queue", "dummy_receipt_handle"
+            "test_queue",
+            "dummy_receipt_handle",
         )
 
 
 def test_simp_bot_point_balance_exception() -> None:
-    """
-    Test that simp_bot handles exceptions in point_balance gracefully.
-
-    :return: None.
-    """
+    """Test that simp_bot handles exceptions in point_balance gracefully."""
     event = {
         "Records": [
             _make_sqs_record(
@@ -302,24 +282,22 @@ def test_simp_bot_point_balance_exception() -> None:
                 options=[],
                 command_issuer="issuer#7777",
                 channel_id="channelXYZ",
-            )
-        ]
+            ),
+        ],
     }
 
-    with patch(
-        "processing_lambdas.simp_bot.DiscordClient"
-    ) as mock_discord_client_class, patch(
-        "processing_lambdas.simp_bot.SqsClient"
-    ) as mock_sqs_client_class, patch(
-        "processing_lambdas.simp_bot.get_point_balance"
-    ) as mock_get_balance:
+    with (
+        patch("processing_lambdas.simp_bot.DiscordClient") as mock_discord_client_class,
+        patch("processing_lambdas.simp_bot.SqsClient") as mock_sqs_client_class,
+        patch("processing_lambdas.simp_bot.get_point_balance") as mock_get_balance,
+    ):
         mock_discord_client = MagicMock()
         mock_sqs_client = MagicMock()
         mock_discord_client_class.return_value = mock_discord_client
         mock_sqs_client_class.return_value = mock_sqs_client
 
         mock_get_balance.side_effect = RuntimeError(
-            "Something went wrong fetching balances."
+            "Something went wrong fetching balances.",
         )
 
         simp_bot(event, {})
@@ -329,5 +307,6 @@ def test_simp_bot_point_balance_exception() -> None:
         assert "Something went wrong fetching balances." in args[0]["content"]
 
         mock_sqs_client.delete_sqs_message.assert_called_once_with(
-            "test_queue", "dummy_receipt_handle"
+            "test_queue",
+            "dummy_receipt_handle",
         )
