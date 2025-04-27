@@ -1,13 +1,23 @@
-# Linter
-isort
-flake8
-flake8-annotations
-flake8-docstrings
-coverage
-black
-
-# App
-pytest
+# Main stuff
 requests
 boto3
 pynacl
+
+# Linting, formatting, type checking
+black
+flake8
+flake8-docstrings
+flake8-annotations
+flake8-commas
+flake8-multiline-containers
+isort
+darglint
+mypy
+
+# Testing
+pytest
+pytest-cov
+
+# Documentation
+sphinx
+sphinx-rtd-theme

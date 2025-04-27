@@ -4,7 +4,9 @@ from utils.pinpoint_client import PinpointClient
 
 
 def raid_alert(
-    pinpoint_app_id: str, origination_number: str, destination_number: str
+    pinpoint_app_id: str,
+    origination_number: str,
+    destination_number: str,
 ) -> bool:
     """
     Send raid alerts to a user.
@@ -19,10 +21,15 @@ def raid_alert(
     voice_message = f"<speak>{message}</speak>"
 
     pinpoint_client.send_sms_message(
-        pinpoint_app_id, origination_number, destination_number, message
+        pinpoint_app_id,
+        origination_number,
+        destination_number,
+        message,
     )
     pinpoint_client.send_voice_message(
-        origination_number, destination_number, voice_message
+        origination_number,
+        destination_number,
+        voice_message,
     )
 
     return True

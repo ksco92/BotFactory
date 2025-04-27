@@ -1,4 +1,6 @@
-"""Test the SQS client."""
+"""
+Test the SqsClient class.
+"""
 
 from unittest.mock import patch
 
@@ -10,15 +12,19 @@ from utils.sqs_client import SqsClient
 
 @pytest.fixture
 def sqs_client() -> SqsClient:
-    """Create a SQS client."""
+    """
+    Create an SqsClient fixture.
+
+    :return: An SqsClient instance.
+    """
     return SqsClient()
 
 
 def test_delete_sqs_message(sqs_client: SqsClient) -> None:
     """
-    Test delete_sqs_message function.
+    Test that delete_sqs_message deletes a message from SQS successfully.
 
-    :param sqs_client: An SqsClient.
+    :param sqs_client: An SqsClient instance.
     :return: None.
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
@@ -28,9 +34,9 @@ def test_delete_sqs_message(sqs_client: SqsClient) -> None:
 
 def test_send_sqs_message(sqs_client: SqsClient) -> None:
     """
-    Test send_sqs_message function.
+    Test that send_sqs_message sends a message to SQS successfully.
 
-    :param sqs_client: An SqsClient.
+    :param sqs_client: An SqsClient instance.
     :return: None.
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):

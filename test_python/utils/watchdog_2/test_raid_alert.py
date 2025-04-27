@@ -1,4 +1,6 @@
-"""Test the raid_alert function."""
+"""
+Test the raid_alert function.
+"""
 
 from unittest.mock import patch
 
@@ -7,6 +9,6 @@ from utils.watchdog_2.raid_alert import raid_alert
 
 
 def test_raid_alert() -> None:
-    """Test the raid_alert function."""
+    """Check that raid_alert sends both SMS and voice messages without error."""
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
         assert raid_alert("app+id", "phone_number", "phone_number")

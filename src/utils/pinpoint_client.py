@@ -46,7 +46,7 @@ class PinpointClient:
                         "Body": message,
                         "MessageType": "TRANSACTIONAL",
                         "OriginationNumber": origination_number,
-                    }
+                    },
                 },
             },
         )
@@ -57,7 +57,10 @@ class PinpointClient:
         return True
 
     def send_voice_message(
-        self: Self, origination_number: str, destination_number: str, ssml_message: str
+        self: Self,
+        origination_number: str,
+        destination_number: str,
+        ssml_message: str,
     ) -> bool:
         """
         Send a voice message with Pinpoint.
@@ -77,7 +80,7 @@ class PinpointClient:
                     "LanguageCode": "en-US",
                     "VoiceId": "Matthew",
                     "Text": ssml_message,
-                }
+                },
             },
         )
 

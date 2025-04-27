@@ -4,6 +4,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
+from nacl.signing import SigningKey
 
 from discord.discord_client import DiscordClient
 
@@ -19,48 +20,42 @@ def test_init(client: DiscordClient) -> None:
     assert isinstance(client._secret, dict)
 
 
-@patch("requests.post")
-def test_send_message_to_channel_success(
-    mock_post: dict, client: DiscordClient
-) -> None:
+def test_send_message_to_channel_success(client: DiscordClient) -> None:
     """
     Test sending a message to a channel with a success response.
 
-    :param mock_post: Mock post method.
     :param client: A Discord client.
     :return: None.
     """
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_post.return_value = mock_response
-    result = client.send_message_to_channel("Test message", "123456")
+    with patch("requests.post") as mock_post:
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+        result = client.send_message_to_channel("Test message", "123456")
 
-    assert result is True
+        assert result is True
 
-    mock_post.assert_called_once_with(
-        "https://discord.com/api/channels/123456/messages",
-        headers=client._headers,
-        json="Test message",
-    )
+        mock_post.assert_called_once_with(
+            "https://discord.com/api/channels/123456/messages",
+            headers=client._headers,
+            json="Test message",
+        )
 
 
-@patch("requests.post")
-def test_send_message_to_channel_failure(
-    mock_post: dict, client: DiscordClient
-) -> None:
+def test_send_message_to_channel_failure(client: DiscordClient) -> None:
     """
     Test sending a message to a channel with a failure response.
 
-    :param mock_post: Mock post method.
     :param client: A Discord client.
     :return: None.
     """
-    mock_response = MagicMock()
-    mock_response.status_code = 400
-    mock_post.return_value = mock_response
+    with patch("requests.post") as mock_post:
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_post.return_value = mock_response
 
-    with pytest.raises(Exception):
-        client.send_message_to_channel("Test message", "123456")
+        with pytest.raises(Exception):
+            client.send_message_to_channel("Test message", "123456")
 
 
 def test_get_success_response(client: DiscordClient) -> None:
@@ -99,11 +94,7 @@ def test_get_success_response_ping(client: DiscordClient) -> None:
     expected_response = {
         "isBase64Encoded": False,
         "statusCode": 200,
-        "body": json.dumps(
-            {
-                "type": client.response_types["PONG"],
-            }
-        ),
+        "body": json.dumps({"type": client.response_types["PONG"]}),
     }
 
     assert response == expected_response
@@ -168,18 +159,61 @@ def test_verify_event_signature_failure(
     Test the verify_event_signature method for a failed verification scenario.
 
     :param client: A Discord client.
+    :param lambda_bad_ping_event: A fixture representing a ping event with an invalid signature.
     :return: None.
     """
     with pytest.raises(Exception):
         client.verify_event_signature(lambda_bad_ping_event)
 
 
+def test_verify_event_signature_success(client: DiscordClient) -> None:
+    """
+    Test the verify_event_signature method for a successful verification scenario.
+
+    This creates a real ephemeral key pair, signs a known message, and verifies
+    it using the ephemeral public key set in client._secret["PublicKey"].
+
+    :param client: A Discord client.
+    :return: None.
+    """
+    signing_key = SigningKey.generate()
+    verify_key = signing_key.verify_key
+
+    # Patch the _secret attribute directly with a dictionary,
+    # so "client._secret['PublicKey']" remains subscriptable.
+    with patch.object(
+        client,
+        "_secret",
+        {
+            "PublicKey": verify_key.encode().hex(),
+            "Token": "fake-token",
+        },
+    ):
+        auth_ts = "1234567890"
+        raw_body = '{"test": "payload"}'.encode()
+
+        # The message to sign is auth_ts + raw_body.
+        signed_message = auth_ts.encode() + raw_body
+        signature = signing_key.sign(signed_message).signature.hex()
+
+        event = {
+            "headers": {
+                "x-signature-ed25519": signature,
+                "x-signature-timestamp": auth_ts,
+            },
+            "body": raw_body.decode(),
+        }
+
+        assert client.verify_event_signature(event) is True
+
+
 @patch("requests.get")
-def test_get_user_success(mock_get: dict, client: DiscordClient) -> None:
+def test_get_user_success(mock_get: MagicMock, client: DiscordClient) -> None:
     """
     Test the get_user method for a successful response.
 
     :param client: A Discord client.
+    :param mock_get: Mock GET method.
     :return: None.
     """
     mock_response = MagicMock()
@@ -204,11 +238,12 @@ def test_get_user_success(mock_get: dict, client: DiscordClient) -> None:
 
 
 @patch("requests.get")
-def test_get_user_error(mock_get: dict, client: DiscordClient) -> None:
+def test_get_user_error(mock_get: MagicMock, client: DiscordClient) -> None:
     """
     Test the get_user method for an error response.
 
     :param client: A Discord client.
+    :param mock_get: Mock GET method.
     :return: None.
     """
     mock_response = MagicMock()

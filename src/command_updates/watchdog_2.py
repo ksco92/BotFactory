@@ -4,7 +4,7 @@ import os
 
 import requests
 
-from utils.get_secret import get_secret
+from utils.secrets_manager_client import SecretsManagerClient
 
 
 def watchdog2_commands(_: dict, __: dict) -> None:
@@ -13,10 +13,10 @@ def watchdog2_commands(_: dict, __: dict) -> None:
 
     :param _: AWS event from SQS.
     :param __: AWS context.
-    :return: None.
     """
+    sm_client = SecretsManagerClient()
     bot_secret_name = os.environ.get("BOT_SECRET_NAME")
-    secret = get_secret(bot_secret_name)
+    secret = sm_client.get_secret(bot_secret_name)
 
     url = f"https://discord.com/api/v10/applications/{secret['ApplicationId']}/commands"
 

@@ -6,7 +6,7 @@ from typing import Self
 import requests
 from nacl.signing import VerifyKey
 
-from utils.secret_manager_client import SecretsManagerClient
+from utils.secrets_manager_client import SecretsManagerClient
 
 
 class DiscordClient:
@@ -17,7 +17,6 @@ class DiscordClient:
         Client for discord operations.
 
         :param secret_name: Name of the secret there the API token is.
-        :return: None.
         """
         secrets_manager_client = SecretsManagerClient()
         self._api_url = "https://discord.com/api"
@@ -32,7 +31,9 @@ class DiscordClient:
         }
 
     def get_success_response(
-        self: Self, content: str | None, ping: bool = False
+        self: Self,
+        content: str | None,
+        ping: bool = False,
     ) -> dict:
         """
         Get a success response to send back to Discord.
@@ -51,7 +52,7 @@ class DiscordClient:
                         "data": {
                             "content": content,
                         },
-                    }
+                    },
                 ),
             }
 
@@ -62,7 +63,7 @@ class DiscordClient:
                 "body": json.dumps(
                     {
                         "type": self.response_types["PONG"],
-                    }
+                    },
                 ),
             }
 
@@ -82,7 +83,7 @@ class DiscordClient:
                     "data": {
                         "content": f"[UNAUTHORIZED]: {content}",
                     },
-                }
+                },
             ),
         }
 
@@ -102,7 +103,7 @@ class DiscordClient:
                     "data": {
                         "content": f"[ERROR]: {content}",
                     },
-                }
+                },
             ),
         }
 
@@ -130,6 +131,7 @@ class DiscordClient:
         Get the username and discriminator of a user.
 
         :param user_id: ID of the user.
+        :raises RuntimeError: If the user could not be retrieved.
         :return: Username and discriminator of the user.
         """
         url = f"{self._api_url}/users/{user_id}"
@@ -142,9 +144,7 @@ class DiscordClient:
 
         else:
             raise RuntimeError(
-                f"""
-            Unable to get user {user_id} -> {str(json.loads(response.content))}
-            """
+                f"""Unable to get user {user_id} -> {str(json.loads(response.content))}""",
             )
 
     @staticmethod
@@ -184,6 +184,7 @@ class DiscordClient:
 
         :param content: Content to send.
         :param channel_id: ID of the channel.
+        :raises Exception: If the message was not sent successfully.
         :return: True if the message was sent successfully.
         """
         url = f"{self._api_url}/channels/{channel_id}/messages"
@@ -192,7 +193,7 @@ class DiscordClient:
 
         if response.status_code != 200:
             raise Exception(
-                f"Failed to send message to channel {channel_id}: {str(response.content)}"
+                f"Failed to send message to channel {channel_id}: {str(response.content)}",
             )
 
         return True

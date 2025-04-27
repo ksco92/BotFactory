@@ -1,4 +1,6 @@
-"""Test the SQS client."""
+"""
+Test the DdbClient class.
+"""
 
 from unittest.mock import patch
 
@@ -10,15 +12,19 @@ from utils.ddb_client import DdbClient
 
 @pytest.fixture
 def ddb_client() -> DdbClient:
-    """Create a SQS client."""
+    """
+    Create a DdbClient fixture.
+
+    :return: A DdbClient instance.
+    """
     return DdbClient()
 
 
 def test_get_item(ddb_client: DdbClient) -> None:
     """
-    Test get_item function.
+    Test that get_item retrieves the correct item from DynamoDB.
 
-    :param ddb_client: A DdbClient.
+    :param ddb_client: A DdbClient instance.
     :return: None.
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
@@ -28,9 +34,9 @@ def test_get_item(ddb_client: DdbClient) -> None:
 
 def test_put_item(ddb_client: DdbClient) -> None:
     """
-    Test put_item function.
+    Test that put_item inserts an item into the table without errors.
 
-    :param ddb_client: A DdbClient.
+    :param ddb_client: A DdbClient instance.
     :return: None.
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
@@ -39,9 +45,9 @@ def test_put_item(ddb_client: DdbClient) -> None:
 
 def test_scan(ddb_client: DdbClient) -> None:
     """
-    Test scan function.
+    Test that scan retrieves items from the table correctly.
 
-    :param ddb_client: A DdbClient.
+    :param ddb_client: A DdbClient instance.
     :return: None.
     """
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):

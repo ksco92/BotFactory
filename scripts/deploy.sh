@@ -35,4 +35,4 @@ python -m pytest -v test_python/
 ###########################
 # Deploy
 
-cdk deploy --all --require-approval never --concurrency
+cdk deploy --all --require-approval never --concurrency 5

@@ -23,7 +23,7 @@ def discord_receiver(event: dict, _: dict) -> dict:
         discord_client.verify_event_signature(event)
     except Exception as e:
         return discord_client.get_unauthorized_response(
-            f"Invalid request signature: {e}"
+            f"Invalid request signature: {e}",
         )
 
     discord_event_attributes = discord_client.get_event_attributes(event)

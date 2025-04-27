@@ -19,13 +19,13 @@ class SecretsManagerClient:
         """
         Retrieve a secret from AWS SecretsManager based on the name of the secret.
 
-        :param str secret_name: Name of the secret to retrieve.
+        :param secret_name: Name of the secret to retrieve.
         :return: Dictionary with the contents of the secret.
         """
         logging.info(f"Retrieving secret {secret_name}...")
 
         get_secret_value_response = self.secrets_manager.get_secret_value(
-            SecretId=secret_name
+            SecretId=secret_name,
         )
 
         logging.info("Secret retrieved...")

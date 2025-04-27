@@ -11,6 +11,7 @@ def update_contact_info(discord_user: str, phone_number: str, table_name: str) -
     :param discord_user: User to update the info for.
     :param phone_number: Number to add.
     :param table_name: Name of the DDB table with the contact info.
+    :raises ValueError: If the phone number is invalid.
     :return: True.
     """
     if not validate_phone_number(phone_number):

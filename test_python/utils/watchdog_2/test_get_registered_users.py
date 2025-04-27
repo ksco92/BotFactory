@@ -1,4 +1,6 @@
-"""Test get_registered_users function."""
+"""
+Test the get_registered_users function.
+"""
 
 from unittest.mock import patch
 
@@ -7,11 +9,7 @@ from utils.watchdog_2.get_registered_users import get_registered_users
 
 
 def test_get_registered_users() -> None:
-    """
-    Test get_registered_users function.
-
-    :return: None.
-    """
+    """Check that get_registered_users returns the correct list of users."""
     with patch("botocore.client.BaseClient._make_api_call", new=mock_make_api_call):
         response = get_registered_users("dummy_table")
         assert len(response) == 2

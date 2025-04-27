@@ -1,0 +1,17 @@
+.run/*
+.venv/*
+cdk.out/*
+coverage/*
+node_modules/*
+.coverage
+package-lock.json
+.git/*
+.idea/*
+.pytest_cache/*
+*.jpeg
+*.d.ts
+*.js
+*.pyc
+*/__init__.py
+
+llm_context.txt

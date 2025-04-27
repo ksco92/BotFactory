@@ -17,7 +17,6 @@ def watchdog2(event: dict, _: dict) -> None:
 
     :param event: AWS event from SQS.
     :param _: AWS context.
-    :return: None.
     """
     origination_number = os.environ.get("ORIGINATION_NUMBER")
     discord_client = DiscordClient(os.environ.get("BOT_SECRET_NAME"))
@@ -39,7 +38,9 @@ def watchdog2(event: dict, _: dict) -> None:
         if command == "update2":
             try:
                 update_contact_info(
-                    command_issuer, options[0]["value"], contact_info_table_name
+                    command_issuer,
+                    options[0]["value"],
+                    contact_info_table_name,
                 )
                 discord_client.send_message_to_channel(
                     {
@@ -54,7 +55,7 @@ def watchdog2(event: dict, _: dict) -> None:
                         "content": """
                     [ValueError]: Use this format for your number +12223334455,
                     see this: https://en.wikipedia.org/wiki/E.164
-                    """
+                    """,
                     },
                     channel_id,
                 )
@@ -71,7 +72,9 @@ def watchdog2(event: dict, _: dict) -> None:
             try:
                 discord_user = discord_client.get_user(options[0]["value"])
                 ddb_item = ddb_client.get_item(
-                    contact_info_table_name, "discord_user", discord_user
+                    contact_info_table_name,
+                    "discord_user",
+                    discord_user,
                 )
                 phone_number = ddb_item["phone_number"]["S"]
                 raid_alert(pinpoint_app_id, origination_number, phone_number)
@@ -92,7 +95,7 @@ def watchdog2(event: dict, _: dict) -> None:
 
         elif command == "registered_users2":
             try:
-                users = get_registered_users()
+                users = get_registered_users(contact_info_table_name)
                 discord_client.send_message_to_channel(
                     {
                         "content": "\n".join([user for user in users]),

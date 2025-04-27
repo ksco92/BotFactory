@@ -1,5 +1,5 @@
 import {
-    Duration, Stack, StackProps, Tags,
+    Duration, RemovalPolicy, Stack, StackProps, Tags,
 } from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import {Runtime} from 'aws-cdk-lib/aws-lambda';
@@ -10,12 +10,7 @@ import {Key} from 'aws-cdk-lib/aws-kms';
 import {Queue} from 'aws-cdk-lib/aws-sqs';
 import importSync from 'import-sync';
 import {
-    Deployment,
-    DomainName,
-    LambdaIntegration,
-    LambdaRestApi,
-    Model,
-    PassthroughBehavior,
+    Deployment, LambdaIntegration, LambdaRestApi, Model, PassthroughBehavior,
 } from 'aws-cdk-lib/aws-apigateway';
 import {ARecord, HostedZone, RecordTarget} from 'aws-cdk-lib/aws-route53';
 import {ApiGatewayDomain} from 'aws-cdk-lib/aws-route53-targets';
@@ -55,6 +50,11 @@ export default class DiscordBotStack extends Stack {
 
         this.botSecret = new Secret(this, `BotSecret${this.botName}`, {
             secretName: `bot/${this.botName}`,
+            encryptionKey: new Key(this, `BotSecret${this.botName}KMSKey`, {
+                enableKeyRotation: true,
+                alias: `BotSecret${this.botName}KMSKey`,
+                removalPolicy: RemovalPolicy.DESTROY,
+            }),
         });
 
         /// ////////////////////////////////////////////
@@ -63,12 +63,12 @@ export default class DiscordBotStack extends Stack {
         /// ////////////////////////////////////////////
         // Receiver queue
 
-        const queueKmsKey = new Key(this, `SQSKMSKey${this.botName}`, {
-            enableKeyRotation: true,
-        });
-
         this.queue = new Queue(this, `SQS${this.botName}`, {
-            encryptionMasterKey: queueKmsKey,
+            encryptionMasterKey: new Key(this, `SQS${this.botName}KMSKey`, {
+                enableKeyRotation: true,
+                alias: `SQS${this.botName}`,
+                removalPolicy: RemovalPolicy.DESTROY,
+            }),
             queueName: `SQS${this.botName}`,
             visibilityTimeout: Duration.seconds(60),
         });
@@ -151,6 +151,7 @@ export default class DiscordBotStack extends Stack {
             subjectAlternativeNames: [
                 `*.${publicHostedZone.zoneName}`,
             ],
+            certificateName: `Certificate${this.botName}`,
         });
 
         /// ////////////////////////////////////////////
@@ -165,15 +166,9 @@ export default class DiscordBotStack extends Stack {
                 stageName: 'prod',
             },
             domainName: {
-                domainName: publicHostedZone.zoneName,
+                domainName: `${this.botName.toLowerCase()}.${publicHostedZone.zoneName}`,
                 certificate,
             },
-        });
-
-        new DomainName(this, `APIDomainName${this.botName}`, {
-            domainName: `${this.botName.toLowerCase()}.${publicHostedZone.zoneName}`,
-            certificate,
-            mapping: api,
         });
 
         new ARecord(this, `APIARecord${this.botName}`, {

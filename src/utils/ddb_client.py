@@ -48,7 +48,6 @@ class DdbClient:
 
         :param table_name: Name of the table to upsert to.
         :param data: Dictionary with the data to upsert.
-        :return: None.
         """
         logging.info(f"Upserting item to {table_name}...")
 
