@@ -1,29 +1,45 @@
 import {
-    Duration, RemovalPolicy, Stack, StackProps, Tags,
+    Duration, NestedStack, RemovalPolicy, Stack, StackProps, Tags,
 } from 'aws-cdk-lib';
-import {Construct} from 'constructs';
-import {Runtime} from 'aws-cdk-lib/aws-lambda';
+import {
+    Construct,
+} from 'constructs';
+import {
+    Runtime,
+} from 'aws-cdk-lib/aws-lambda';
 import {
     ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import {Key} from 'aws-cdk-lib/aws-kms';
-import {Queue} from 'aws-cdk-lib/aws-sqs';
-import importSync from 'import-sync';
+import {
+    Key,
+} from 'aws-cdk-lib/aws-kms';
+import {
+    Queue,
+} from 'aws-cdk-lib/aws-sqs';
 import {
     Deployment, LambdaIntegration, LambdaRestApi, Model, PassthroughBehavior,
 } from 'aws-cdk-lib/aws-apigateway';
-import {ARecord, HostedZone, RecordTarget} from 'aws-cdk-lib/aws-route53';
-import {ApiGatewayDomain} from 'aws-cdk-lib/aws-route53-targets';
+import {
+    ARecord, HostedZone, RecordTarget,
+} from 'aws-cdk-lib/aws-route53';
+import {
+    ApiGatewayDomain,
+} from 'aws-cdk-lib/aws-route53-targets';
 import * as fs from 'fs';
-import {Certificate, CertificateValidation} from 'aws-cdk-lib/aws-certificatemanager';
-import {Secret} from 'aws-cdk-lib/aws-secretsmanager';
-import {PythonFunction} from '@aws-cdk/aws-lambda-python-alpha';
+import {
+    Certificate, CertificateValidation,
+} from 'aws-cdk-lib/aws-certificatemanager';
+import {
+    Secret,
+} from 'aws-cdk-lib/aws-secretsmanager';
+import {
+    PythonFunction,
+} from '@aws-cdk/aws-lambda-python-alpha';
 import MonitoringStack from './monitoring-stack';
 
 interface DiscordBotStackProps extends StackProps {
     botName: string;
-    processingStackClassName: string;
-    processingStackClassFile: string;
+    processingStackClass: typeof NestedStack;
     hostedZoneId: string;
     zoneName: string;
 }
@@ -101,7 +117,7 @@ export default class DiscordBotStack extends Stack {
 
         const lambdaReceiver = new PythonFunction(this, `LambdaReceiver${props.botName}`, {
             functionName: `LambdaReceiver${props.botName}`,
-            runtime: Runtime.PYTHON_3_11,
+            runtime: Runtime.PYTHON_3_13,
             handler: 'discord_receiver',
             memorySize: 128,
             timeout: Duration.seconds(5),
@@ -120,11 +136,8 @@ export default class DiscordBotStack extends Stack {
         /// ////////////////////////////////////////////
         // Processing stack
 
-        const plug = importSync(props.processingStackClassFile);
-        const constructorName = Object.keys(plug)[0];
-
-        // @ts-ignore
-        const processingStack = new plug[constructorName](this, `ProcessingStack${this.botName}`, {
+        const processingStack = new props.processingStackClass(this, `ProcessingStack${this.botName}`, {
+            // @ts-expect-error Interface inherits from NestedStackProps
             botName: this.botName,
             receiverQueue: this.queue,
             botSecretName: `bot/${this.botName}`,
@@ -257,6 +270,7 @@ export default class DiscordBotStack extends Stack {
         new MonitoringStack(this, `MonitoringStack${this.botName}`, {
             botName: this.botName,
             receiverQueue: this.queue,
+            // @ts-expect-error Lambda does exist in the stack
             processingFunction: processingStack.processingLambda,
             receiverFunction: lambdaReceiver,
         });

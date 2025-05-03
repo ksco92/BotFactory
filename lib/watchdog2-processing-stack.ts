@@ -1,32 +1,43 @@
 import {
-    Duration, NestedStack, NestedStackProps, RemovalPolicy,
+    Duration, NestedStack, RemovalPolicy,
 } from 'aws-cdk-lib';
-import {Construct} from 'constructs';
-import {AttributeType, Table} from 'aws-cdk-lib/aws-dynamodb';
-import {Key} from 'aws-cdk-lib/aws-kms';
+import {
+    Construct,
+} from 'constructs';
+import {
+    AttributeType, Table,
+} from 'aws-cdk-lib/aws-dynamodb';
+import {
+    Key,
+} from 'aws-cdk-lib/aws-kms';
 import {
     Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import {PythonFunction} from '@aws-cdk/aws-lambda-python-alpha';
-import {Runtime} from 'aws-cdk-lib/aws-lambda';
-import {SqsEventSource} from 'aws-cdk-lib/aws-lambda-event-sources';
-import {Queue} from 'aws-cdk-lib/aws-sqs';
-import {Secret} from 'aws-cdk-lib/aws-secretsmanager';
-import {CfnApp, CfnSMSChannel, CfnVoiceChannel} from 'aws-cdk-lib/aws-pinpoint';
+import {
+    PythonFunction,
+} from '@aws-cdk/aws-lambda-python-alpha';
+import {
+    Runtime,
+} from 'aws-cdk-lib/aws-lambda';
+import {
+    SqsEventSource,
+} from 'aws-cdk-lib/aws-lambda-event-sources';
+import {
+    Secret,
+} from 'aws-cdk-lib/aws-secretsmanager';
+import {
+    CfnApp, CfnSMSChannel, CfnVoiceChannel,
+} from 'aws-cdk-lib/aws-pinpoint';
 import convertToSnakeCase from './utils/convert-to-snake-case';
+import ProcessingStackProps from './utils/processing-stack-props';
 
-interface Watchdog2ProcessingStackProps extends NestedStackProps {
-    botName: string;
-    receiverQueue: Queue;
-    botSecretName: string;
-}
 
 export default class Watchdog2ProcessingStack extends NestedStack {
     contactInfoTable: Table;
 
     processingLambda: PythonFunction;
 
-    constructor(scope: Construct, id: string, props: Watchdog2ProcessingStackProps) {
+    constructor(scope: Construct, id: string, props: ProcessingStackProps) {
         super(scope, id, props);
 
         /// ////////////////////////////////////////////

@@ -1,25 +1,37 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
+import {
+    NestedStack,
+} from 'aws-cdk-lib';
 import DiscordBotStack from '../lib/discord-bot-stack';
+import Watchdog2ProcessingStack from '../lib/watchdog2-processing-stack';
+import SimpBotProcessingStack from '../lib/simp-bot-processing-stack';
 
 const hostedZoneId = 'Z007921225FIW4IMG71RE';
 const zoneName = 'botfactory.lol';
 
 const app = new cdk.App();
 
-new DiscordBotStack(app, 'Watchdog2Stack', {
-    botName: 'Watchdog2',
-    processingStackClassName: 'Watchdog2ProcessingStack',
-    processingStackClassFile: './watchdog2-processing-stack.ts',
-    hostedZoneId,
-    zoneName,
-});
+const bots: {
+    botName: string,
+    processingStackClass: typeof NestedStack,
+}[] = [
+    {
+        botName: 'Watchdog2',
+        processingStackClass: Watchdog2ProcessingStack,
+    },
+    {
+        botName: 'SimpBot',
+        processingStackClass: SimpBotProcessingStack,
+    },
+];
 
-new DiscordBotStack(app, 'SimpBotStack', {
-    botName: 'SimpBot',
-    processingStackClassName: 'SimpBotProcessingStack',
-    processingStackClassFile: './simp-bot-processing-stack.ts',
-    hostedZoneId,
-    zoneName,
+bots.forEach(bot => {
+    new DiscordBotStack(app, `${bot.botName}Stack`, {
+        botName: bot.botName,
+        processingStackClass: bot.processingStackClass,
+        hostedZoneId,
+        zoneName,
+    });
 });

@@ -1,0 +1,27 @@
+# These are the onse for local dev
+
+# Main stuff
+requests
+types-requests
+boto3
+boto3-stubs
+pynacl
+
+# Linting, formatting, type checking
+black
+flake8
+flake8-docstrings
+flake8-annotations
+flake8-commas
+flake8-multiline-containers
+isort
+darglint
+mypy
+
+# Testing
+pytest
+pytest-cov
+
+# Documentation
+sphinx
+sphinx-rtd-theme

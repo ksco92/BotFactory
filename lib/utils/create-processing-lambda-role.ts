@@ -1,8 +1,12 @@
-import {Construct} from 'constructs';
+import {
+    Construct,
+} from 'constructs';
 import {
     ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import {Stack} from 'aws-cdk-lib';
+import {
+    Stack,
+} from 'aws-cdk-lib';
 
 export default function createProcessingLambdaRole(scope: Construct, botName: string) {
     const processingRole = new Role(scope, `LambdaProcessingRole${botName}`, {

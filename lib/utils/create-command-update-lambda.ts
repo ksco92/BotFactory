@@ -1,9 +1,21 @@
-import {PythonFunction} from '@aws-cdk/aws-lambda-python-alpha';
-import {Runtime} from 'aws-cdk-lib/aws-lambda';
-import {Duration} from 'aws-cdk-lib';
-import {Role} from 'aws-cdk-lib/aws-iam';
-import {Construct} from 'constructs';
-import {ISecret} from 'aws-cdk-lib/aws-secretsmanager';
+import {
+    PythonFunction,
+} from '@aws-cdk/aws-lambda-python-alpha';
+import {
+    Runtime,
+} from 'aws-cdk-lib/aws-lambda';
+import {
+    Duration,
+} from 'aws-cdk-lib';
+import {
+    Role,
+} from 'aws-cdk-lib/aws-iam';
+import {
+    Construct,
+} from 'constructs';
+import {
+    ISecret,
+} from 'aws-cdk-lib/aws-secretsmanager';
 import convertToSnakeCase from './convert-to-snake-case';
 
 export default function createCommandUpdateLambda(

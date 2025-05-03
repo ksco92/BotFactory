@@ -1,7 +1,15 @@
-import {NestedStack, NestedStackProps} from 'aws-cdk-lib';
-import {Construct} from 'constructs';
-import {PythonFunction} from '@aws-cdk/aws-lambda-python-alpha';
-import {Queue} from 'aws-cdk-lib/aws-sqs';
+import {
+    NestedStack, NestedStackProps,
+} from 'aws-cdk-lib';
+import {
+    Construct,
+} from 'constructs';
+import {
+    PythonFunction,
+} from '@aws-cdk/aws-lambda-python-alpha';
+import {
+    Queue,
+} from 'aws-cdk-lib/aws-sqs';
 
 interface MonitoringStackProps extends NestedStackProps {
     botName: string;

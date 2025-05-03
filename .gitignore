@@ -10,5 +10,6 @@ cdk.out
 .venv
 .coverage
 coverage
+documentation
 
 llm_context.txt

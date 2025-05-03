@@ -1,6 +1,12 @@
-import {Secret} from 'aws-cdk-lib/aws-secretsmanager';
-import {Construct} from 'constructs';
-import {Stack} from 'aws-cdk-lib';
+import {
+    Secret,
+} from 'aws-cdk-lib/aws-secretsmanager';
+import {
+    Construct,
+} from 'constructs';
+import {
+    Stack,
+} from 'aws-cdk-lib';
 
 export default function getBotSecret(scope: Construct, botSecretName: string) {
     // Grant permissions to the secret, the

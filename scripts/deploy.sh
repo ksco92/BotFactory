@@ -6,15 +6,14 @@ set -ex
 ###########################
 # Installs
 
-npm i
-npm i --save-dev @types/httptoolkit__esm
+npm run clean
 
 ###########################
 ###########################
 # Linters
 
 # Python
-./scripts/lint.sh
+./scripts/python_lint.sh
 
 # CDK
 npm run lint
@@ -24,15 +23,17 @@ npm run lint
 # Tests
 
 # Python
-source venv/bin/activate
-python -m pytest -v test_python/
+source .venv/bin/activate
+PYTHONPATH=./src python -m pytest -v test_python/ --cov=src --cov-report=term --cov-report=html:coverage
+mkdir -p documentation/python_coverage
+rm -rf documentation/python_coverage
+mv coverage documentation/python_coverage
 
 # CDK
-# TODO: This test fails with an import error.
-# npm run test
+npm run test
 
 ###########################
 ###########################
 # Deploy
 
-cdk deploy --all --require-approval never --concurrency 5
+npm run deploy

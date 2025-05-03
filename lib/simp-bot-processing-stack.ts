@@ -1,24 +1,28 @@
-import {NestedStack, NestedStackProps, RemovalPolicy} from 'aws-cdk-lib';
-import {Construct} from 'constructs';
-import {AttributeType, Table} from 'aws-cdk-lib/aws-dynamodb';
-import {Key} from 'aws-cdk-lib/aws-kms';
-import {Queue} from 'aws-cdk-lib/aws-sqs';
-import {PythonFunction} from '@aws-cdk/aws-lambda-python-alpha';
+import {
+    NestedStack, RemovalPolicy,
+} from 'aws-cdk-lib';
+import {
+    Construct,
+} from 'constructs';
+import {
+    AttributeType, Table,
+} from 'aws-cdk-lib/aws-dynamodb';
+import {
+    Key,
+} from 'aws-cdk-lib/aws-kms';
+import {
+    PythonFunction,
+} from '@aws-cdk/aws-lambda-python-alpha';
 import createProcessingLambdaRole from './utils/create-processing-lambda-role';
 import getBotSecret from './utils/get-bot-secret';
 import createProcessingLambda from './utils/create-processing-lambda';
 import createCommandUpdateLambda from './utils/create-command-update-lambda';
-
-interface SimpBotProcessingStackProps extends NestedStackProps {
-    botName: string;
-    receiverQueue: Queue;
-    botSecretName: string;
-}
+import ProcessingStackProps from './utils/processing-stack-props';
 
 export default class SimpBotProcessingStack extends NestedStack {
     processingLambda: PythonFunction;
 
-    constructor(scope: Construct, id: string, props: SimpBotProcessingStackProps) {
+    constructor(scope: Construct, id: string, props: ProcessingStackProps) {
         super(scope, id, props);
 
         /// ////////////////////////////////////////////
