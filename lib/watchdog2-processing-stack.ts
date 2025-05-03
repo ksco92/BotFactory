@@ -75,6 +75,7 @@ export default class Watchdog2ProcessingStack extends NestedStack {
             removalPolicy: RemovalPolicy.DESTROY,
             encryptionKey: new Key(this, 'ContactInfoTableKMSKey', {
                 enableKeyRotation: true,
+                alias: 'ContactInfoTableKMSKey',
             }),
         });
 
